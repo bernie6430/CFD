@@ -27,9 +27,9 @@ int main(){
     scanf("%d",&N);
 
     //construct array for storage
-    double *a=(double*)malloc(sizeof(double)*N); //superdiagonal elements
+    double *a=(double*)malloc(sizeof(double)*N); //subdiagonal elements
     double *b=(double*)malloc(sizeof(double)*N); //diagonal elements
-    double *c=(double*)malloc(sizeof(double)*N); //subdiagonal elements
+    double *c=(double*)malloc(sizeof(double)*N); //superdiagonal elements
     double *d=(double*)malloc(sizeof(double)*N); //rhs elements
     double *x=(double*)malloc(sizeof(double)*N); //solution elements
 
