@@ -40,14 +40,12 @@ int main(){
     double *fin=(double*)malloc(sizeof(double)*N); //solution elements
     double *exact = (double*)malloc(sizeof(double)*N); //exact solution
 
-    double *tem =(double*)malloc(sizeof(double)*(N-2));
-
-    int i,j,k;
-    for(i=0;i<(N-2);i++)
-        tem[i]=0.0;
+    int i,j;
+    for(i=0;i<N;i++)
+        fin[i]=0.0;
 
     //iterative TDMA
-    for(j=0;j<200;j++){
+    for(j=0;j<477;j++){
         for(i=0;i<N;i++){
             //First node
             if(i==0){
@@ -55,7 +53,6 @@ int main(){
                 ap[i]=4.0*D+0.875*F;
                 ae[i]=-((4.0/3.0)*D-0.375*F);
                 su[i]=((8.0/3.0)*D+1.25*F)*finA;
-                fin[i]=0.0;
             }
             //second node
             else if(i==1){
@@ -63,32 +60,25 @@ int main(){
                 ap[i]=2.0*D+0.375*F;
                 ae[i]=-(D-0.375*F);
                 su[i]=-0.25*F*finA;
-                fin[i]=0.0;
             }
             //Last Node
             else if(i==(N-1)){
                 aw[i]=-((4.0/3.0)*D+0.75*F);
                 ap[i]=4.0*D-0.375*F;
                 ae[i]=0.0;
-                fin[i]=0.0;
-                printf("%f\n",tem[i-2]);
-                su[i]=((8.0/3.0)*D-F)*finB-0.125*F*tem[i-2];
+                //printf("%f\n",tem[i-2]);
+                su[i]=((8.0/3.0)*D-F)*finB-0.125*F*fin[i-2];
             }
             //Other Nodes
             else{
                 aw[i]=-(D+0.875*F);
                 ap[i]=2.0*D+0.375*F;
                 ae[i]=-(D-0.375*F);
-                fin[i]=0.0;
-                //printf("%f\n",tem[i-2]);
-                su[i]=-0.125*F*tem[i-2];
+                su[i]=-0.125*F*fin[i-2];
             }
         }
 
         TridiagonalSolve(aw,ap,ae,su,fin,N);
-        for(k=0;k<(N-2);k++)
-            tem[k]=fin[k];
-
     }
 
 
@@ -98,13 +88,6 @@ int main(){
 
     printf("Peclet Number: %f\n",Pe);
 
-    /*for(i=0;i<N;i++){
-        printf("%f\n",aw[i]);
-        printf("%f\n",ap[i]);
-        printf("%f\n",ae[i]);
-        printf("%f\n",su[i]);
-        printf("\n");
-    }*/
     printf("numerical solution :            analytical solution:\n");
     //Save data to txt file
     for(i=0;i<N;i++){
@@ -121,7 +104,6 @@ int main(){
     free(su);
     free(fin);
     free(exact);
-    free(tem);
 
     fclose(output);
     fclose(output2);
