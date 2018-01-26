@@ -45,12 +45,11 @@ int main(){
     double *fin=(double*)malloc(sizeof(double)*N); //solution elements
     double *exact = (double*)malloc(sizeof(double)*N); //exact solution
 
-    double *aww =(double*)malloc(sizeof(double)*(N-2));
-    double *tem =(double*)malloc(sizeof(double)*(N-2));
+    double *aww =(double*)malloc(sizeof(double));
 
     int i,j,k;
-    for(i=0;i<(N-2);i++)
-        tem[i]=1.0;
+    for(i=0;i<N;i++)
+        fin[i]=0.0;
     //scheme 1;central difference
     if(scheme==1){
         for(i=0;i<N;i++){
@@ -116,41 +115,35 @@ int main(){
         printf("choose boundary condition:1.fixed 2.FOU\n");
         scanf("%d",&cas);
         //iterative TDMA
-        for(j=0;j<1;j++){
+        for(j=0;j<100;j++){
             for(i=0;i<N;i++){
                 //First node
                 if(i==0){
-                    ae[i]=0.0;
-                    ap[i]=3.0*D+2.0*F;
-                    aw[i]=-D;
-                    su[i]=2.0*F+2.0*D;
-                    fin[i]=0.0;
+                    aw[i]=0.0;
+                    ap[i]=3.0*D+F;
+                    ae[i]=-D;
+                    su[i]=2.0*F+2.0*D-F*fin[i];
                 }
                 //second node
                 else if(i==1){
-                    ae[i]=-(D+2.0*F);
-                    ap[i]=2.0*D+1.5*F;
-                    aw[i]=-D;
-                    su[i]=-0.5*F;
-                    fin[i]=0.0;
+                    aw[i]=-(D+F);
+                    ap[i]=2.0*D+F;
+                    ae[i]=-D;
+                    su[i]=F*fin[i-1]-0.5*F*fin[i]-0.5*F;
                 }
                 //Last Node
                 else if(i==(N-1)){
                     if(cas==1){
-                        ae[i]=-(D+1.5*F);
+                        aw[i]=-(D+F);
                         ap[i]=3.0*D;
-                        aw[i]=0.0;
-                        aww[i-2]=0.5*F;
-                        fin[i]=0.0;
-                        su[i]=-0.5*F*tem[i-2];
+                        ae[i]=0.0;
+                        su[i]=0.5*F*fin[i-1]-0.5*F*fin[i-2];
                     }
                     else if(cas==2){
-                        ae[i]=-(D+F);
+                        aw[i]=-(D+F);
                         ap[i]=F+3.0*D;
-                        aw[i]=0.0;
-                        aww[i-2]=0.0;
-                        fin[i]=0.0;
-                        su[i]=-aww[i-2]*tem[i-2];
+                        ae[i]=0.0;
+                        su[i]=0.0;
                     }
                     else{
                         printf("error message!!\n");
@@ -159,17 +152,13 @@ int main(){
                 }
                 //Other Nodes
                 else{
-                    ae[i]=-(D+2.0*F);
-                    ap[i]=2.0*D+1.5*F;
-                    aw[i]=-D;
-                    aww[i-2]=0.5*F;
-                    fin[i]=0.0;
-                    su[i]=-0.5*F*tem[i-2];
+                    aw[i]=-(D+F);
+                    ap[i]=2.0*D+F;
+                    ae[i]=-D;
+                    su[i]=F*fin[i-1]-0.5*F*fin[i]-0.5*F*fin[i-2];
                 }
             }
-            TridiagonalSolve(ae,ap,aw,su,fin,N);
-            for(k=0;k<(N-2);k++)
-                tem[k]=fin[k];
+            TridiagonalSolve(aw,ap,ae,su,fin,N);
         }
     }
     else{
@@ -199,7 +188,6 @@ int main(){
     free(fin);
     free(exact);
     free(aww);
-    free(tem);
 
     fclose(output);
     fclose(output2);
